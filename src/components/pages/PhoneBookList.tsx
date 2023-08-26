@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import styled from "@emotion/styled";
 
@@ -6,12 +6,22 @@ import usePagination from "@/hooks/usePagination";
 import ContactCard from "@/components/Layouts/ContactCard";
 import PaginationControls from "@/components/Generals/PaginationControls";
 import Loading from "@/components/Generals/Loading";
+import SearchInput from "../Generals/Search";
 
 const ITEMS_PER_PAGE = 10;
 
 const QUERY = gql`
-  query ContactsQuery($limit: Int!, $offset: Int!) {
-    contact(limit: $limit, offset: $offset) {
+  query ContactsQuery($limit: Int!, $offset: Int!, $searchTerm: String) {
+    contact(
+      limit: $limit
+      offset: $offset
+      where: {
+        _or: [
+          { first_name: { _ilike: $searchTerm } }
+          { last_name: { _ilike: $searchTerm } }
+        ]
+      }
+    ) {
       first_name
       last_name
       phones {
@@ -19,7 +29,14 @@ const QUERY = gql`
         number
       }
     }
-    contact_aggregate {
+    contact_aggregate(
+      where: {
+        _or: [
+          { first_name: { _ilike: $searchTerm } }
+          { last_name: { _ilike: $searchTerm } }
+        ]
+      }
+    ) {
       aggregate {
         count
       }
@@ -37,13 +54,18 @@ const PhoneBookContainer = styled.div`
 `;
 
 const PhoneBookList = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const { currentPage, setCurrentPage, setTotalCount } = usePagination({
     initialPage: 1,
     itemsPerPage: ITEMS_PER_PAGE,
     initialTotalCount: 0,
   });
 
-  const { data, loading, error } = useQuery<{
+  const {
+    data,
+    loading: isLoading,
+    error,
+  } = useQuery<{
     contact: {
       id: string;
       first_name: string;
@@ -62,6 +84,7 @@ const PhoneBookList = () => {
     variables: {
       limit: ITEMS_PER_PAGE,
       offset: (currentPage - 1) * ITEMS_PER_PAGE,
+      searchTerm: `%${searchTerm}%`,
     },
   });
 
@@ -73,7 +96,7 @@ const PhoneBookList = () => {
     }
   }, [data, setTotalCount, totalCount]);
 
-  if (loading) return <Loading />;
+  if (isLoading) return <Loading />;
 
   if (error || !data) {
     console.error(error);
@@ -85,6 +108,12 @@ const PhoneBookList = () => {
 
   return (
     <PhoneBookContainer>
+      <SearchInput
+        value={searchTerm}
+        onSearch={setSearchTerm}
+        isLoading={isLoading}
+        placeholder="Search contacts by firstname or lastname..."
+      />
       {contacts.map((contact) => {
         const phoneNumbers = contact.phones.map((phone) => phone.number);
         return (
