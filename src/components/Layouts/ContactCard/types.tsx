@@ -5,4 +5,5 @@ export interface ContactProps {
   isFavorite: boolean;
   addToFavorites: (id: string) => void;
   removeFromFavorites: (id: string) => void;
+  onDelete: () => void;
 }

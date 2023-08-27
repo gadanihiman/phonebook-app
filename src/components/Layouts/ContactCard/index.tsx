@@ -2,6 +2,7 @@ import { isValidPhoneNumber } from "@/utils/validations";
 import {
   CardContainer,
   ContactName,
+  DeleteButton,
   ErrorText,
   FavoriteButton,
   PhoneNumber,
@@ -14,6 +15,7 @@ const ContactCard = ({
   name,
   phoneNumbers,
   isFavorite,
+  onDelete,
   addToFavorites,
   removeFromFavorites,
 }: ContactProps) => {
@@ -41,6 +43,7 @@ const ContactCard = ({
       >
         ★
       </FavoriteButton>
+      <DeleteButton onClick={onDelete}>X</DeleteButton>
     </CardContainer>
   );
 };

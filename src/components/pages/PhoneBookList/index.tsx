@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 import ContactCard from "@/components/Layouts/ContactCard";
 import PaginationControls from "@/components/Generals/PaginationControls";
@@ -7,11 +7,12 @@ import Loading from "@/components/Generals/Loading";
 import SearchInput from "@/components/Generals/Search";
 import usePagination from "@/hooks/usePagination";
 import useFavorite from "@/hooks/useFavorite";
-import { GET_CONTACT } from "@/queries/contactQueries";
+import { DELETE_CONTACT, GET_CONTACT } from "@/queries/contactQueries";
 
 import { Contact } from "./types";
 import { PhoneBookContainer } from "./styled";
 import CreateContactForm from "../CreateContactForm";
+import { AlertContainer, ErrorAlert } from "../CreateContactForm/styled";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -43,6 +44,20 @@ const PhoneBookList = () => {
     },
   });
 
+  const [deleteContact, { loading: deleting, error: deleteError }] =
+    useMutation(DELETE_CONTACT, {
+      refetchQueries: [
+        {
+          query: GET_CONTACT,
+          variables: {
+            limit: ITEMS_PER_PAGE,
+            offset: (currentPage - 1) * ITEMS_PER_PAGE,
+            searchTerm: `%${searchTerm}%`,
+          },
+        },
+      ],
+    });
+
   const totalCount = data?.contact_aggregate.aggregate.count || 0;
 
   useEffect(() => {
@@ -52,6 +67,7 @@ const PhoneBookList = () => {
   }, [data, setTotalCount, totalCount]);
 
   if (isLoading) return <Loading />;
+  if (deleting) return <Loading />;
 
   if (error || !data) {
     console.error(error);
@@ -61,9 +77,25 @@ const PhoneBookList = () => {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
   const contacts = data.contact || [];
 
+  const handleDeleteContact = async (id: string) => {
+    try {
+      await deleteContact({
+        variables: { id },
+        // Optionally, you can add a refetchQueries property to refetch the contacts after deletion
+      });
+    } catch (error) {
+      console.error("Failed to delete contact:", error);
+    }
+  };
+
   return (
     <PhoneBookContainer>
       <CreateContactForm />
+      {deleteError && (
+        <AlertContainer>
+          <ErrorAlert>{deleteError?.message}</ErrorAlert>
+        </AlertContainer>
+      )}
       <SearchInput
         value={searchTerm}
         onSearch={setSearchTerm}
@@ -82,6 +114,7 @@ const PhoneBookList = () => {
             isFavorite={isFavorite}
             addToFavorites={() => addToFavorites(contact.id)}
             removeFromFavorites={() => removeFromFavorites(contact.id)}
+            onDelete={() => handleDeleteContact(contact.id)}
           />
         );
       })}

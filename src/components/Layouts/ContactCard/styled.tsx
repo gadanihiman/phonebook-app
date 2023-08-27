@@ -55,3 +55,20 @@ export const FavoriteButton = styled.button<{
   margin: 5px;
   border-radius: 50%;
 `;
+
+export const DeleteButton = styled.button`
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: darkred;
+  }
+`;
