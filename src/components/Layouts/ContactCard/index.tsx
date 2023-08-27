@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "@/utils/validations";
 import {
   CardContainer,
   ContactName,
@@ -16,15 +17,13 @@ const ContactCard = ({
   addToFavorites,
   removeFromFavorites,
 }: ContactProps) => {
-  const phoneNumberRegex = /^[0-9+\-().\s]+$/;
-
   return (
     <CardContainer>
       <ContactName>{name}</ContactName>
       <PhoneNumberContainer>
         {phoneNumbers.length > 0 ? (
           phoneNumbers.map((number, index) =>
-            phoneNumberRegex.test(number) ? (
+            isValidPhoneNumber(number) ? (
               <PhoneNumber key={index}>{number}</PhoneNumber>
             ) : (
               <ErrorText key={index}>Invalid number</ErrorText>

@@ -11,6 +11,7 @@ import { GET_CONTACT } from "@/queries/contactQueries";
 
 import { Contact } from "./types";
 import { PhoneBookContainer } from "./styled";
+import CreateContactForm from "../CreateContactForm";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -62,6 +63,7 @@ const PhoneBookList = () => {
 
   return (
     <PhoneBookContainer>
+      <CreateContactForm />
       <SearchInput
         value={searchTerm}
         onSearch={setSearchTerm}

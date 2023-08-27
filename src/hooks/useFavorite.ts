@@ -1,4 +1,3 @@
-// import { Contact } from "@/components/pages/PhoneBookList/types";
 import { useState, useEffect } from "react";
 
 const useFavorite = () => {
