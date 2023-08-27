@@ -1,14 +1,18 @@
 import styled from "@emotion/styled";
 
 const BaseCard = styled.div`
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 8px 0;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 16px;
+  transition: all 0.3s ease;
 
-  // larger screens
   @media (min-width: 768px) {
-    padding: 16px;
+    padding: 24px;
+  }
+
+  &:hover {
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
   }
 `;
 

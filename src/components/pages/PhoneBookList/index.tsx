@@ -10,9 +10,14 @@ import useFavorite from "@/hooks/useFavorite";
 import { DELETE_CONTACT, GET_CONTACT } from "@/queries/contactQueries";
 
 import { Contact } from "./types";
-import { PhoneBookContainer } from "./styled";
+import {
+  ContactListContainer,
+  Divider,
+  ErrorSnackBar,
+  PhoneBookContainer,
+} from "./styled";
 import CreateContactForm from "../CreateContactForm";
-import { AlertContainer, ErrorAlert } from "../CreateContactForm/styled";
+import SubTitle from "@/components/Generals/SubTitle";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -44,7 +49,7 @@ const PhoneBookList = () => {
     },
   });
 
-  const [deleteContact, { loading: deleting, error: deleteError }] =
+  const [deleteContact, { loading: isDeleting, error: deleteError }] =
     useMutation(DELETE_CONTACT, {
       refetchQueries: [
         {
@@ -66,16 +71,16 @@ const PhoneBookList = () => {
     }
   }, [data, setTotalCount, totalCount]);
 
-  if (isLoading) return <Loading />;
-  if (deleting) return <Loading />;
+  // if (isLoading) return <Loading />;
+  // if (isDeleting) return <Loading />;
 
-  if (error || !data) {
+  if (error || (!data && !isLoading)) {
     console.error(error);
     return <h2>Something went wrong!</h2>;
   }
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-  const contacts = data.contact || [];
+  const contacts = data?.contact || [];
 
   const handleDeleteContact = async (id: string) => {
     try {
@@ -90,34 +95,36 @@ const PhoneBookList = () => {
 
   return (
     <PhoneBookContainer>
+      <Divider />
       <CreateContactForm />
-      {deleteError && (
-        <AlertContainer>
-          <ErrorAlert>{deleteError?.message}</ErrorAlert>
-        </AlertContainer>
-      )}
+      <Divider />
+      <SubTitle>Contacts</SubTitle>
       <SearchInput
         value={searchTerm}
         onSearch={setSearchTerm}
         isLoading={isLoading}
         placeholder="Search contacts by firstname or lastname..."
       />
-      {contacts.map((contact) => {
-        const isFavorite = favorites.includes(contact.id);
-        const phoneNumbers = contact.phones.map((phone) => phone.number);
-        return (
-          <ContactCard
-            id={contact.id}
-            key={contact.id}
-            name={`${contact.first_name} ${contact.last_name}`}
-            phoneNumbers={phoneNumbers}
-            isFavorite={isFavorite}
-            addToFavorites={() => addToFavorites(contact.id)}
-            removeFromFavorites={() => removeFromFavorites(contact.id)}
-            onDelete={() => handleDeleteContact(contact.id)}
-          />
-        );
-      })}
+      {deleteError && <ErrorSnackBar>{deleteError?.message}</ErrorSnackBar>}
+      {(isLoading || isDeleting) && <Loading />}
+      <ContactListContainer>
+        {contacts.map((contact) => {
+          const isFavorite = favorites.includes(contact.id);
+          const phoneNumbers = contact.phones.map((phone) => phone.number);
+          return (
+            <ContactCard
+              id={contact.id}
+              key={contact.id}
+              name={`${contact.first_name} ${contact.last_name}`}
+              phoneNumbers={phoneNumbers}
+              isFavorite={isFavorite}
+              addToFavorites={() => addToFavorites(contact.id)}
+              removeFromFavorites={() => removeFromFavorites(contact.id)}
+              onDelete={() => handleDeleteContact(contact.id)}
+            />
+          );
+        })}
+      </ContactListContainer>
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}

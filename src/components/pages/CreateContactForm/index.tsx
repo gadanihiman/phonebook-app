@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useMemo, useState } from "react";
+
 import {
   FormContainer,
   InputField,
@@ -17,6 +18,7 @@ import {
 } from "@/queries/contactQueries";
 import Loading from "@/components/Generals/Loading";
 import { isValidName, isValidPhoneNumber } from "@/utils/validations";
+import SubTitle from "@/components/Generals/SubTitle";
 
 const ITEMS_PER_PAGE = 10;
 const currentPage = 1;
@@ -96,6 +98,7 @@ const CreateContactForm = () => {
 
   return (
     <ContactFormContainer>
+      <SubTitle>Add a New Contact</SubTitle>
       <FormContainer>
         <InputField
           type="text"
@@ -118,11 +121,13 @@ const CreateContactForm = () => {
         <SubmitButton onClick={handleCreateContact}>Create</SubmitButton>
         {loading && <Loading />}
       </FormContainer>
-      <AlertContainer>
-        {success && <SuccessAlert>Contact successfully added!</SuccessAlert>}
-        {validationError && <ErrorLabel>{validationError}</ErrorLabel>}
-        {mutationError && <ErrorAlert>{mutationError}</ErrorAlert>}
-      </AlertContainer>
+      {(success || validationError || mutationError) && (
+        <AlertContainer>
+          {success && <SuccessAlert>Contact successfully added!</SuccessAlert>}
+          {validationError && <ErrorLabel>{validationError}</ErrorLabel>}
+          {mutationError && <ErrorAlert>{mutationError}</ErrorAlert>}
+        </AlertContainer>
+      )}
     </ContactFormContainer>
   );
 };

@@ -13,27 +13,49 @@ export const CardContainer = styled(BaseCard)`
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
   }
 `;
 
 export const ContactName = styled.span`
   font-weight: bold;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
 
-  // larger screens
+  svg {
+    margin-right: 8px;
+  }
+
   @media (min-width: 768px) {
-    margin-bottom: 0;
+    margin-bottom: 0px;
   }
 `;
 
 export const PhoneNumberContainer = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 8px;
 `;
 
 export const PhoneNumber = styled.span`
   color: #333;
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+
+  svg {
+    margin-right: 8px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export const ErrorText = styled.span`
@@ -45,30 +67,37 @@ export const ErrorText = styled.span`
   font-size: 0.9em;
 `;
 
-export const FavoriteButton = styled.button<{
-  isFavorite: boolean;
-}>`
-  background: ${(props) => (props.isFavorite ? "yellow" : "grey")};
+export const FavoriteButton = styled.button<{ isFavorite: boolean }>`
+  background: ${(props) => (props.isFavorite ? "#FFD700" : "#ccc")};
   border: none;
   cursor: pointer;
   padding: 5px;
-  margin: 5px;
   border-radius: 50%;
+  font-size: 1.2rem;
 `;
 
 export const DeleteButton = styled.button`
-  background: red;
+  background: #ff4500;
   color: white;
   border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1.2rem;
+`;
 
-  &:hover {
-    background: darkred;
+export const ActionButtons = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 25px;
+  border-top: 1px solid #ccc;
+  padding-top: 16px;
+  width: 100%;
+  justify-content: flex-end;
+
+  @media (min-width: 768px) {
+    margin-top: 0px;
+    border-top: none;
+    padding-top: 0px;
+    width: auto;
+    justify-content: flex-start;
   }
 `;

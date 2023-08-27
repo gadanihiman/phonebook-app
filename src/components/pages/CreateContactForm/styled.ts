@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 export const ContactFormContainer = styled.div`
-  padding: 16px;
+  padding: 8px;
 
   // larger screens
   @media (min-width: 768px) {
@@ -22,8 +22,14 @@ export const FormContainer = styled.div`
 `;
 
 export const InputField = styled.input`
-  margin: 10px;
-  padding: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+
+  &:focus {
+    border: 1px solid #007bff;
+  }
 `;
 
 export const SubmitButton = styled.button`
