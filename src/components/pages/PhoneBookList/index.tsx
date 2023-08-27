@@ -1,57 +1,18 @@
 import { useEffect, useState } from "react";
-import { useQuery, gql } from "@apollo/client";
-import styled from "@emotion/styled";
+import { useQuery } from "@apollo/client";
 
-import usePagination from "@/hooks/usePagination";
 import ContactCard from "@/components/Layouts/ContactCard";
 import PaginationControls from "@/components/Generals/PaginationControls";
 import Loading from "@/components/Generals/Loading";
-import SearchInput from "../Generals/Search";
+import SearchInput from "@/components/Generals/Search";
+import usePagination from "@/hooks/usePagination";
+import useFavorite from "@/hooks/useFavorite";
+import { GET_CONTACT } from "@/queries/contactQueries";
+
+import { Contact } from "./types";
+import { PhoneBookContainer } from "./styled";
 
 const ITEMS_PER_PAGE = 10;
-
-const QUERY = gql`
-  query ContactsQuery($limit: Int!, $offset: Int!, $searchTerm: String) {
-    contact(
-      limit: $limit
-      offset: $offset
-      where: {
-        _or: [
-          { first_name: { _ilike: $searchTerm } }
-          { last_name: { _ilike: $searchTerm } }
-        ]
-      }
-    ) {
-      first_name
-      last_name
-      phones {
-        contact_id
-        number
-      }
-    }
-    contact_aggregate(
-      where: {
-        _or: [
-          { first_name: { _ilike: $searchTerm } }
-          { last_name: { _ilike: $searchTerm } }
-        ]
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-const PhoneBookContainer = styled.div`
-  padding: 16px;
-
-  // larger screens
-  @media (min-width: 768px) {
-    padding: 40px;
-  }
-`;
 
 const PhoneBookList = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,27 +21,20 @@ const PhoneBookList = () => {
     itemsPerPage: ITEMS_PER_PAGE,
     initialTotalCount: 0,
   });
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorite();
 
   const {
     data,
     loading: isLoading,
     error,
   } = useQuery<{
-    contact: {
-      id: string;
-      first_name: string;
-      last_name: string;
-      phones: {
-        contact_id: string;
-        number: string;
-      }[];
-    }[];
+    contact: Contact[];
     contact_aggregate: {
       aggregate: {
         count: number;
       };
     };
-  }>(QUERY, {
+  }>(GET_CONTACT, {
     variables: {
       limit: ITEMS_PER_PAGE,
       offset: (currentPage - 1) * ITEMS_PER_PAGE,
@@ -115,12 +69,17 @@ const PhoneBookList = () => {
         placeholder="Search contacts by firstname or lastname..."
       />
       {contacts.map((contact) => {
+        const isFavorite = favorites.includes(contact.id);
         const phoneNumbers = contact.phones.map((phone) => phone.number);
         return (
           <ContactCard
+            id={contact.id}
             key={contact.id}
             name={`${contact.first_name} ${contact.last_name}`}
             phoneNumbers={phoneNumbers}
+            isFavorite={isFavorite}
+            addToFavorites={() => addToFavorites(contact.id)}
+            removeFromFavorites={() => removeFromFavorites(contact.id)}
           />
         );
       })}
