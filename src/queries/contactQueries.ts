@@ -11,6 +11,7 @@ export const GET_CONTACT = gql`
           { last_name: { _ilike: $searchTerm } }
         ]
       }
+      order_by: { created_at: desc }
     ) {
       id
       first_name
@@ -66,6 +67,16 @@ export const GET_ALL_CONTACT_NAMES = gql`
       id
       first_name
       last_name
+    }
+  }
+`;
+
+export const DELETE_CONTACT = gql`
+  mutation DeleteContact($id: Int!) {
+    delete_contact_by_pk(id: $id) {
+      first_name
+      last_name
+      id
     }
   }
 `;
