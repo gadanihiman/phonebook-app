@@ -12,10 +12,6 @@ export const SearchInput = styled.input`
   border-radius: 20px;
   border: 1px solid #ccc;
   font-size: 16px;
-  &:focus {
-    border-color: #007bff;
-    outline: none;
-  }
 `;
 
 export const Loader = styled.div`
