@@ -50,18 +50,7 @@ const PhoneBookList = () => {
   });
 
   const [deleteContact, { loading: isDeleting, error: deleteError }] =
-    useMutation(DELETE_CONTACT, {
-      refetchQueries: [
-        {
-          query: GET_CONTACT,
-          variables: {
-            limit: ITEMS_PER_PAGE,
-            offset: (currentPage - 1) * ITEMS_PER_PAGE,
-            searchTerm: `%${searchTerm}%`,
-          },
-        },
-      ],
-    });
+    useMutation(DELETE_CONTACT);
 
   const totalCount = data?.contact_aggregate.aggregate.count || 0;
 
@@ -70,9 +59,6 @@ const PhoneBookList = () => {
       setTotalCount(totalCount);
     }
   }, [data, setTotalCount, totalCount]);
-
-  // if (isLoading) return <Loading />;
-  // if (isDeleting) return <Loading />;
 
   if (error || (!data && !isLoading)) {
     console.error(error);
@@ -86,7 +72,16 @@ const PhoneBookList = () => {
     try {
       await deleteContact({
         variables: { id },
-        // Optionally, you can add a refetchQueries property to refetch the contacts after deletion
+        refetchQueries: [
+          {
+            query: GET_CONTACT,
+            variables: {
+              limit: ITEMS_PER_PAGE,
+              offset: (currentPage - 1) * ITEMS_PER_PAGE,
+              searchTerm: `%${searchTerm}%`,
+            },
+          },
+        ],
       });
     } catch (error) {
       console.error("Failed to delete contact:", error);

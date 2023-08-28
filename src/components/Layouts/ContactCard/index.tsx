@@ -39,7 +39,6 @@ const ContactCard = ({
         {phoneNumbers.length > 0 ? (
           phoneNumbers.map((number, index) =>
             isValidPhoneNumber(number) ? (
-              // <PhoneNumber key={index}>{number}</PhoneNumber>
               <PhoneNumber key={index}>
                 <FontAwesomeIcon icon={faPhone} />
                 <a href={`tel:${number}`}>{number}</a>
